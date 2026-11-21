@@ -1,0 +1,32 @@
+services:
+  base:
+    image: hhwang927/rio:base_amd64
+    # never started as a container, only built
+    scale: 0
+    build:
+      context: dockerfiles
+      dockerfile: base.dockerfile
+      platforms:
+        - linux/amd64
+
+  nginx:
+    image: hhwang927/rio:nginx_amd64
+    container_name: rioNginx 
+    build:
+      context: dockerfiles
+      dockerfile: nginx.dockerfile
+      platforms:
+        - linux/amd64
+      additional_contexts:
+        base: service:base
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - "./usf:/rioapp"
+    command: bash -c "
+      sed -i -r \"s@^user .*;@user root;@g\" 
+      /etc/nginx/nginx.conf
+      && cp /rioapp/configs/nginx.conf /etc/nginx/conf.d/default.conf
+      && nginx
+      && bash"
