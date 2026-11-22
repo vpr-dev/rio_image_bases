@@ -30,3 +30,14 @@ services:
       && cp /rioapp/configs/nginx.conf /etc/nginx/conf.d/default.conf
       && nginx
       && bash"
+
+  openresty:
+    image: hhwang927/rio:openresty_amd64
+    scale: 0
+    build:
+      context: dockerfiles
+      dockerfile: openresty.dockerfile
+      platforms:
+        - linux/amd64
+      additional_contexts:
+        base: service:base
